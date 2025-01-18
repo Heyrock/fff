@@ -1,46 +1,3 @@
-# -*- coding: cp1251 -*-
-# Цель: научится создавать Inline клавиатуры и кнопки на них в Telegram-bot.
-#
-# Задача "Ещё больше выбора":
-#
-# Необходимо дополнить код предыдущей задачи, чтобы при нажатии на кнопку
-# 'Рассчитать' присылалась Inline-клавиатура.
-#
-# Создайте клавиатуру InlineKeyboardMarkup с 2 кнопками InlineKeyboardButton:
-#
-# 1. С текстом 'Рассчитать норму калорий' и callback_data='calories'
-# 2. С текстом 'Формулы расчёта' и callback_data='formulas'
-#
-# Создайте новую функцию main_menu(message), которая:
-#
-# 1. Будет обёрнута в декоратор message_handler, срабатывающий при передаче
-# текста 'Рассчитать'.
-# 2. Сама функция будет присылать ранее созданное Inline меню и текст
-# 'Выберите опцию:'
-#
-# Создайте новую функцию get_formulas(call), которая:
-#
-# 1. Будет обёрнута в декоратор callback_query_handler, который будет
-# реагировать на текст 'formulas'.
-# 2. Будет присылать сообщение с формулой Миффлина-Сан Жеора.
-#
-# Измените функцию set_age и декоратор для неё:
-#
-# 1. Декоратор смените на callback_query_handler, который будет реагировать
-# на текст 'calories'.
-# 2. Теперь функция принимает не message, а call. Доступ к сообщению будет
-# следующим - call.message.
-#
-# По итогу получится следующий алгоритм:
-#
-# 1. Вводится команда /start
-# 2. На эту команду присылается обычное меню: 'Рассчитать' и 'Информация'.
-# 3. В ответ на кнопку 'Рассчитать' присылается Inline меню:
-# 'Рассчитать норму калорий' и 'Формулы расчёта'
-# 4. По Inline кнопке 'Формулы расчёта' присылается сообщение с формулой.
-# 5. По Inline кнопке 'Рассчитать норму калорий' начинает работать машина
-# состояний по цепочке.
-
 from config import api
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram import Bot, Dispatcher, executor
@@ -60,21 +17,21 @@ dp = Dispatcher(
     storage=MemoryStorage(),
 )
 
-# создание реплай-клавиатуры
+# СЃРѕР·РґР°РЅРёРµ СЂРµРїР»Р°Р№-РєР»Р°РІРёР°С‚СѓСЂС‹
 kb = ReplyKeyboardMarkup(resize_keyboard=True)
 
-bt_calculate = KeyboardButton(text='Рассчитать')
-bt_inform = KeyboardButton(text='Информация')
+bt_calculate = KeyboardButton(text='Р Р°СЃСЃС‡РёС‚Р°С‚СЊ')
+bt_inform = KeyboardButton(text='РРЅС„РѕСЂРјР°С†РёСЏ')
 kb.add(bt_calculate, bt_inform)
 
-# создание инлайн-клавиатуры
+# СЃРѕР·РґР°РЅРёРµ РёРЅР»Р°Р№РЅ-РєР»Р°РІРёР°С‚СѓСЂС‹
 inl_kb = InlineKeyboardMarkup()
 inl_bt_calories = InlineKeyboardButton(
-    text='Рассчитать норму калорий',
+    text='Р Р°СЃСЃС‡РёС‚Р°С‚СЊ РЅРѕСЂРјСѓ РєР°Р»РѕСЂРёР№',
     callback_data='calories',
 )
 inl_bt_formulas = InlineKeyboardButton(
-    text='Формулы расчёта',
+    text='Р¤РѕСЂРјСѓР»С‹ СЂР°СЃС‡С‘С‚Р°',
     callback_data='formulas',
 )
 inl_kb.add(
@@ -83,7 +40,7 @@ inl_kb.add(
 )
 
 
-# создание класса состояний
+# С„СѓРЅРєС†РёСЏ СЂР°СЃС‡РµС‚Р° РєР°Р»РѕСЂРёР№
 class UserState(StatesGroup):
     age = State()
     height = State()
@@ -91,92 +48,92 @@ class UserState(StatesGroup):
     sex = State()
 
 
-# функция расчета калорий
+# С„СѓРЅРєС†РёСЏ СЂР°СЃС‡РµС‚Р° РєР°Р»РѕСЂРёР№
 def calories_calc(age, height, weight, sex):
-    if sex.lower() == 'м':
+    if sex.lower() == 'Рј':
         result = 10 * weight + 6.25 * height - 5 * age + 5
-    elif sex.lower() == 'ж':
+    elif sex.lower() == 'Р¶':
         result = 10 * weight + 6.25 * height - 5 * age - 161
     else:
-        result = 'Для неведомых зверушек данных нет'
+        result = 'Р”Р»СЏ РЅРµРІРµРґРѕРјС‹С… Р·РІРµСЂСѓС€РµРє РґР°РЅРЅС‹С… РЅРµС‚'
     return result
 
 
-# вызов инлайн-клавиатуры
-@dp.message_handler(text='Рассчитать')
+# РІС‹Р·РѕРІ РёРЅР»Р°Р№РЅ-РєР»Р°РІРёР°С‚СѓСЂС‹
+@dp.message_handler(text='Р Р°СЃСЃС‡РёС‚Р°С‚СЊ')
 # @dp.message_handler(text='1')
 async def main_menu(message: Message):
     await message.answer(
-        text='Выберите опцию:',
+        text='Р’С‹Р±РµСЂРёС‚Рµ РѕРїС†РёСЋ:',
         reply_markup=inl_kb,
     )
 
 
-# обработка инлайн-кнопки 'formulas'
+# РѕР±СЂР°Р±РѕС‚РєР° РёРЅР»Р°Р№РЅ-РєРЅРѕРїРєРё 'formulas'
 @dp.callback_query_handler(text=['formulas'])
 async def get_formulas(call: CallbackQuery):
     await call.message.answer(
-        text='формула Миффлина-Сан Жеора'
+        text='С„РѕСЂРјСѓР»Р° РњРёС„С„Р»РёРЅР°-РЎР°РЅ Р–РµРѕСЂР°'
     )
     await call.answer()
 
 
-# # обработка инлайн-кнопки 'formulas',
-# установка состояния 'age' для машины состояний
+# РѕР±СЂР°Р±РѕС‚РєР° РёРЅР»Р°Р№РЅ-РєРЅРѕРїРєРё 'calories',
+# СѓСЃС‚Р°РЅРѕРІРєР° СЃРѕСЃС‚РѕСЏРЅРёСЏ 'age' РґР»СЏ РјР°С€РёРЅС‹ СЃРѕСЃС‚РѕСЏРЅРёР№
 @dp.callback_query_handler(text=['calories'])
 async def set_age(call: CallbackQuery):
-    await call.message.answer('Введите свой возраст (г):')
+    await call.message.answer('Р’РІРµРґРёС‚Рµ СЃРІРѕР№ РІРѕР·СЂР°СЃС‚ (Рі):')
     await call.answer()
     await UserState.age.set()
 
 
-# установка состояния 'height' для машины состояний
+# СѓСЃС‚Р°РЅРѕРІРєР° СЃРѕСЃС‚РѕСЏРЅРёСЏ 'height' РґР»СЏ РјР°С€РёРЅС‹ СЃРѕСЃС‚РѕСЏРЅРёР№
 @dp.message_handler(state=UserState.age)
 async def set_height(message: Message, state: FSMContext):
     try:
         age = int(message.text)
         await state.update_data(age=age)
-        await message.answer('Введите свой рост (см):')
+        await message.answer('Р’РІРµРґРёС‚Рµ СЃРІРѕР№ СЂРѕСЃС‚ (СЃРј):')
         await UserState.height.set()
     except ValueError:
-        await message.answer('Ошибка!')
-        await message.answer('Введите, пожалуйста, цифрой число лет')
+        await message.answer('РћС€РёР±РєР°')
+        await message.answer('Р’РІРµРґРёС‚Рµ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, С†РёС„СЂРѕР№ С‡РёСЃР»Рѕ Р»РµС‚')
 
 
-# установка состояния 'weight' для машины состояний
+# СѓСЃС‚Р°РЅРѕРІРєР° СЃРѕСЃС‚РѕСЏРЅРёСЏ 'weight' РґР»СЏ РјР°С€РёРЅС‹ СЃРѕСЃС‚РѕСЏРЅРёР№
 @dp.message_handler(state=UserState.height)
 async def set_weight(message: Message, state: FSMContext):
     try:
         height = int(message.text)
         await state.update_data(height=height)
-        await message.answer('Введите свой вес (кг):')
+        await message.answer('Р’РІРµРґРёС‚Рµ СЃРІРѕР№ РІРµСЃ (РєРі):')
         await UserState.weight.set()
     except ValueError:
-        await message.answer('Ошибка!')
-        await message.answer('Введите, пожалуйста, цифрой рост')
+        await message.answer('РћС€РёР±РєР°')
+        await message.answer('Р’РІРµРґРёС‚Рµ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, С†РёС„СЂРѕР№ СЂРѕСЃС‚')
 
 
-# установка состояния 'sex' для машины состояний
+# СѓСЃС‚Р°РЅРѕРІРєР° СЃРѕСЃС‚РѕСЏРЅРёСЏ 'sex' РґР»СЏ РјР°С€РёРЅС‹ СЃРѕСЃС‚РѕСЏРЅРёР№
 @dp.message_handler(state=UserState.weight)
 async def set_sex(message: Message, state: FSMContext):
     try:
         weight = int(message.text)
         await state.update_data(weight=weight)
-        await message.answer('Введите ваш пол (М/Ж):')
+        await message.answer('Р’РІРµРґРёС‚Рµ РІР°С€ РїРѕР» (Рњ/Р–):')
         await UserState.sex.set()
     except ValueError:
-        await message.answer('Ошибка!')
-        await message.answer('Введите, пожалуйста, цифрой вес')
+        await message.answer('РћС€РёР±РєР°')
+        await message.answer('Р’РІРµРґРёС‚Рµ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, С†РёС„СЂРѕР№ РІРµСЃ')
 
 
-# вывод количества калорий
+# РІС‹РІРѕРґ РєРѕР»РёС‡РµСЃС‚РІР° РєР°Р»РѕСЂРёР№
 @dp.message_handler(state=UserState.sex)
 async def send_calories(message: Message, state: FSMContext):
     sex = message.text.lower()
 
     try:
         await state.update_data(sex=sex)
-        if sex not in ('м', 'ж'):
+        if sex not in ('Рј', 'Р¶'):
             raise ValueError
         data = await state.get_data()
         result = calories_calc(
@@ -185,35 +142,35 @@ async def send_calories(message: Message, state: FSMContext):
             weight=data['weight'],
             sex=data['sex'],
         )
-        await message.answer(f'ваша норма калорий: {result}')
+        await message.answer(f'РІР°С€Р° РЅРѕСЂРјР° РєР°Р»РѕСЂРёР№: {result}')
         await state.finish()
     except ValueError:
-        await message.answer('Ошибка!')
-        await message.answer('Выберите, пожалуйста, пол М или Ж')
+        await message.answer('РћС€РёР±РєР°')
+        await message.answer('Р’С‹Р±РµСЂРёС‚Рµ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, РїРѕР» Рњ РёР»Рё Р–')
 
 
-# обработка команды /start
+# РѕР±СЂР°Р±РѕС‚РєР° РєРѕРјР°РЅРґС‹ /start
 @dp.message_handler(commands=['start'])
 async def start(message: Message):
     await message.answer(
-        text='Привет! Я бот помогающий твоему здоровью.',
+        text='РџСЂРёРІРµС‚! РЇ Р±РѕС‚ РїРѕРјРѕРіР°СЋС‰РёР№ С‚РІРѕРµРјСѓ Р·РґРѕСЂРѕРІСЊСЋ.',
         reply_markup=kb,
     )
 
 
-# обработка сообщения 'Информация'
-@dp.message_handler(text=['Информация'])
+# РѕР±СЂР°Р±РѕС‚РєР° СЃРѕРѕР±С‰РµРЅРёСЏ 'РРЅС„РѕСЂРјР°С†РёСЏ'
+@dp.message_handler(text=['РРЅС„РѕСЂРјР°С†РёСЏ'])
 async def info(message: Message):
     await message.answer(
-        text='Здесь могла бы быть Ваша реклама'
+        text='Р—РґРµСЃСЊ РјРѕРіР»Р° Р±С‹ Р±С‹С‚СЊ Р’Р°С€Р° СЂРµРєР»Р°РјР°'
     )
 
 
-# обработка всех прочих сообщений
+# РѕР±СЂР°Р±РѕС‚РєР° РІСЃРµС… РїСЂРѕС‡РёС… СЃРѕРѕР±С‰РµРЅРёР№
 @dp.message_handler()
 async def all_messages(message: Message):
     await message.answer(
-        text='Введите команду /start, чтобы начать общение.'
+        text='Р’РІРµРґРёС‚Рµ РєРѕРјР°РЅРґСѓ /start, С‡С‚РѕР±С‹ РЅР°С‡Р°С‚СЊ РѕР±С‰РµРЅРёРµ.'
     )
 
 
